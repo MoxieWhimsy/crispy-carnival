@@ -1,7 +1,7 @@
 import unittest
 
 from textnode import TextNode, TextType
-from textnode_helpers import split_nodes_delimiter
+from textnode_helpers import split_nodes_delimiter, extract_markdown_images, extract_markdown_links
 
 
 class MyTestCase(unittest.TestCase):
@@ -38,6 +38,47 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(len(new_nodes), 3)
         new_nodes = split_nodes_delimiter(new_nodes, "**", TextType.BOLD)
         self.assertEqual(len(new_nodes), 3)
+
+    def test_image_detection(self):
+        text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+        matches = extract_markdown_images(text)
+        # [("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")]
+        self.assertEqual(len(matches), 2)
+        self.assertEqual(matches[0][0], "rick roll")
+        self.assertEqual(matches[0][1], "https://i.imgur.com/aKaOqIh.gif")
+        self.assertEqual(matches[1][0], "obi wan")
+        self.assertEqual(matches[1][1], "https://i.imgur.com/fJRm4Vk.jpeg")
+
+    def test_extract_markdown_images(self):
+        matches = extract_markdown_images(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        self.assertListEqual([("image", "https://i.imgur.com/zjjcJKZ.png")], matches)
+
+    def test_extract_markdown_links(self):
+        text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
+        matches = extract_markdown_links(text)
+        # [("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")]
+        self.assertEqual(len(matches), 2)
+        self.assertEqual(matches[0][0], "to boot dev")
+        self.assertEqual(matches[0][1], "https://www.boot.dev")
+        self.assertEqual(matches[1][0], "to youtube")
+        self.assertEqual(matches[1][1], "https://www.youtube.com/@bootdotdev")
+
+    def test_extract_markdown_mailto_link(self):
+        text = "This is text with a mailto link [Contact Us](mailto:contact@yourwebsite.com) as an example"
+        matches = extract_markdown_links(text)
+        self.assertEqual(len(matches), 1)
+        self.assertEqual(matches[0][0], "Contact Us")
+        self.assertEqual(matches[0][1], "mailto:contact@yourwebsite.com")
+
+    def test_extract_markdown_mailto_link_complex(self):
+        text = "This is text with a mailto link [Contact Support](mailto:contact@yourwebsite.com?subject='Support%20Request'&body='I%20need%20help%20with...') as an example"
+        matches = extract_markdown_links(text)
+        self.assertEqual(len(matches), 1)
+        self.assertEqual(matches[0][0], "Contact Support")
+        self.assertEqual(matches[0][1], "mailto:contact@yourwebsite.com?subject='Support%20Request'&body='I%20need%20help%20with...'")
+
 
 
 if __name__ == '__main__':

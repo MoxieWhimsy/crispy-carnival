@@ -1,5 +1,15 @@
+import re
+
 from textnode import TextNode, TextType
 
+
+def extract_markdown_images(text: str) -> list[tuple[str, str]]:
+    matches = re.findall(r"!\[([\w\s]+)]\(([\w.:/]+)\)", text)
+    return matches
+
+def extract_markdown_links(text: str) -> list[tuple[str, str]]:
+    matches = re.findall(r"\[([\w\s]+)]\(([\w.:/@?&=%']+)\)", text)
+    return matches
 
 def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: TextType) -> list[TextNode]:
     result: list[TextNode] = []
