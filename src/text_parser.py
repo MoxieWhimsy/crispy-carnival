@@ -2,6 +2,11 @@ from textnode import TextNode, TextType
 from textnode_helpers import split_nodes_delimiter, split_nodes_image, split_nodes_link
 
 
+def markdown_to_blocks(markdown: str) -> list[str]:
+    blocks = markdown.split("\n\n")
+    blocks = list(map(str.strip, blocks))
+    return blocks
+
 def text_to_textnodes(text: str) -> list[TextNode]:
     original_node = TextNode(text, TextType.TEXT)
     nodes = [original_node]

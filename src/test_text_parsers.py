@@ -1,6 +1,6 @@
 import unittest
 
-from text_parser import text_to_textnodes
+from text_parser import text_to_textnodes, markdown_to_blocks
 from textnode import TextNode, TextType
 
 
@@ -35,8 +35,53 @@ class MyTestCase(unittest.TestCase):
         ], text_to_textnodes(text))
 
     def test_nested_bold_italic(self):
-        text = "this is _italic_ with an underscore delimiter. This is **bold** with a double star delimiter. This is **_bold italic text_**."
-        print(text_to_textnodes(text))
+        text = "this is _italic text_ with an underscore delimiter. This is **bold text** with a double star delimiter. This is **_bold italic text_**."
+        self.assertEqual([
+            TextNode("this is ", TextType.TEXT),
+            TextNode("italic text", TextType.ITALIC),
+            TextNode(" with an underscore delimiter. This is ", TextType.TEXT),
+            TextNode("bold text", TextType.BOLD),
+            TextNode(" with a double star delimiter. This is ", TextType.TEXT),
+            TextNode("bold italic text", TextType.BOLD_ITALIC),
+            TextNode(".", TextType.TEXT),
+        ], text_to_textnodes(text))
+
+    def test_markdown_to_blocks(self):
+        md = """
+This is **bolded** paragraph
+
+This is another paragraph with _italic_ text and `code` here
+This is the same paragraph on a new line
+
+- This is a list
+- with items
+"""
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            [
+                "This is **bolded** paragraph",
+                "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+                "- This is a list\n- with items",
+            ],
+        )
+
+    def test_markdown_to_blocks_2(self):
+        md = """
+# Heading
+
+## Subheading
+
+Paragraph with text in it. 
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean suscipit diam id justo maximus euismod vel in lacus vitae orci. Duis congue, massa quis semper dapibus, mauris tellus fermentum odio, id bibendum massa ac arcu. Nullam nec tincidunt neque. Donec eget ipsum vel purus facilisis fermentum. Fusce nec lorem ac orci feugiat suscipit gravida eu eget odio. """
+        blocks = markdown_to_blocks(md)
+        self.assertEqual([
+            "# Heading",
+            "## Subheading",
+            "Paragraph with text in it.",
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean suscipit diam id justo maximus euismod vel in lacus vitae orci. Duis congue, massa quis semper dapibus, mauris tellus fermentum odio, id bibendum massa ac arcu. Nullam nec tincidunt neque. Donec eget ipsum vel purus facilisis fermentum. Fusce nec lorem ac orci feugiat suscipit gravida eu eget odio."
+        ], blocks)
 
 if __name__ == '__main__':
     unittest.main()
