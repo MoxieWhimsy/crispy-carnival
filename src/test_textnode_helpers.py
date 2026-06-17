@@ -31,7 +31,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(len(new_nodes), 3)
         self.assertEqual(new_nodes[0], TextNode("This is text with both ", TextType.TEXT))
         self.assertEqual(new_nodes[1], TextNode("bold and ", TextType.BOLD))
-        self.assertEqual(new_nodes[2], TextNode("italics words", TextType.ITALIC))
+        self.assertEqual(new_nodes[2], TextNode("italics words", TextType.BOLD_ITALIC))
 
     def test_nested_ignored(self):
         node = TextNode("This is a code example: `this is markdown with **bold text**` and it shouldn't break up the markdown in the code example", TextType.TEXT)

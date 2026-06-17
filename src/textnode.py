@@ -4,15 +4,33 @@ from htmlnode import LeafNode
 
 
 class TextType(Enum):
-    TEXT = "text/plain"
-    BOLD = "text/bold"
-    ITALIC = "text/italic"
-    CODE = "code"
-    LINK = "link"
-    IMAGE = "image"
+    TEXT = {"text/plain"}
+    BOLD_ITALIC = {"text/bold", "text/italic"}
+    BOLD = {"text/bold"}
+    ITALIC = {"text/italic"}
+    CODE = {"code"}
+    LINK = {"link"}
+    IMAGE = {"image"}
 
     def __str__(self) -> str:
-        return self.value
+        return f'"{" ".join(self.value)}"'
+
+    def __contains__(self, item):
+        for part in item.value:
+            if part not in self.value:
+                return False
+        return True
+
+    def __add__(self, other):
+        if not isinstance(other, TextType):
+            raise TypeError(f"Cannot add {type(other)} with {type(TextType)}")
+
+        if self == TextType.TEXT:
+            return other
+        if other == TextType.TEXT:
+            return self
+
+        return TextType(value=self.value.union(other.value))
 
 class TextNode:
     def __init__(self, text: str, text_type: TextType, url: str | None = None):
@@ -24,7 +42,7 @@ class TextNode:
         return self.text == other.text and self.text_type == other.text_type and self.url == other.url
 
     def __repr__(self) -> str:
-        return f"TextNode({self.text}, {str(self.text_type)}, {self.url})"
+        return f"TextNode({self.text}, {self.text_type}, {self.url})"
 
 def text_node_to_html_node(text_node: TextNode) -> LeafNode:
     match text_node.text_type:

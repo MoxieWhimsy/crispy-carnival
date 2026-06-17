@@ -20,10 +20,21 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: 
                 raise Exception(f"non-matching delimiter detected: {delimiter}")
             for index in range(len(potential_split)):
                 text = potential_split[index]
-                if index % 2 == 1:
-                    result.append(TextNode(text, text_type))
-                elif len(text) > 0:
+                if len(text) <= 0:
+                    continue
+                if index % 2 == 0:
                     result.append(TextNode(potential_split[index], node.text_type))
+                    continue
+                combined = text_type + node.text_type
+                print(combined)
+
+                if TextType.BOLD_ITALIC in combined:
+                    result.append(TextNode(potential_split[index], TextType.BOLD_ITALIC))
+                    continue
+
+                result.append(TextNode(text, text_type))
+
+
             continue
         # else
         result.append(node)
