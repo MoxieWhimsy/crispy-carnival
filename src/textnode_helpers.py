@@ -4,7 +4,7 @@ from textnode import TextNode, TextType
 def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: TextType) -> list[TextNode]:
     result: list[TextNode] = []
     for node in old_nodes:
-        if node.text_type in [TextType.TEXT]:
+        if node.text_type in [TextType.TEXT, TextType.BOLD, TextType.ITALIC]:
             potential_split = node.text.split(delimiter)
             if len(potential_split) % 2 == 0:
                 raise Exception(f"non-matching delimiter detected: {delimiter}")

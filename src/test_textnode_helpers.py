@@ -22,14 +22,23 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(new_nodes[2], TextNode(" ", TextType.TEXT))
         self.assertEqual(new_nodes[3], TextNode("word", TextType.BOLD))
 
-    def test_nested_ignored(self):
+    def test_nested_handled(self):
         node = TextNode("This is text with both **bold and _italics words_**", TextType.TEXT)
         new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
-        print(new_nodes)
         self.assertEqual(len(new_nodes), 2)
         new_nodes = split_nodes_delimiter(new_nodes, "_", TextType.ITALIC)
-        print(new_nodes)
-        self.assertEqual(len(new_nodes), 2)
+        self.assertEqual(len(new_nodes), 3)
+        self.assertEqual(new_nodes[0], TextNode("This is text with both ", TextType.TEXT))
+        self.assertEqual(new_nodes[1], TextNode("bold and ", TextType.BOLD))
+        self.assertEqual(new_nodes[2], TextNode("italics words", TextType.ITALIC))
+
+    def test_nested_ignored(self):
+        node = TextNode("This is a code example: `this is markdown with **bold text**` and it shouldn't break up the markdown in the code example", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
+        self.assertEqual(len(new_nodes), 3)
+        new_nodes = split_nodes_delimiter(new_nodes, "**", TextType.BOLD)
+        self.assertEqual(len(new_nodes), 3)
+
 
 if __name__ == '__main__':
     unittest.main()
