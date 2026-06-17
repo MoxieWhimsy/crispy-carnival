@@ -28,3 +28,51 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: 
         # else
         result.append(node)
     return result
+
+def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
+    result: list[TextNode] = []
+    for node in old_nodes:
+        if node.text_type != TextType.TEXT:
+            result.append(node)
+            continue
+
+        matches = extract_markdown_images(node.text)
+        if len(matches) <= 0:
+            result.append(node)
+            continue
+        remaining_text = node.text
+        for match in matches:
+            alt_text, source = match
+            sections = remaining_text.split(f'![{alt_text}]({source})', 1)
+            if len(sections[0]) > 0:
+                result.append(TextNode(sections[0], TextType.TEXT))
+            remaining_text = sections[1] if len(sections) > 1 else ""
+            result.append(TextNode(alt_text, TextType.IMAGE, source))
+        if len(remaining_text) > 0:
+            result.append(TextNode(remaining_text, TextType.TEXT))
+
+    return result
+
+def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
+    result: list[TextNode] = []
+    for node in old_nodes:
+        if node.text_type != TextType.TEXT:
+            result.append(node)
+            continue
+
+        matches = extract_markdown_links(node.text)
+        if len(matches) <= 0:
+            result.append(node)
+            continue
+        remaining_text = node.text
+        for match in matches:
+            link_text, link_url = match
+            sections = remaining_text.split(f'[{link_text}]({link_url})', 1)
+            if len(sections[0]) > 0:
+                result.append(TextNode(sections[0], TextType.TEXT))
+            remaining_text = sections[1] if len(sections) > 1 else ""
+            result.append(TextNode(link_text, TextType.LINK, link_url))
+        if len(remaining_text) > 0:
+            result.append(TextNode(remaining_text, TextType.TEXT))
+
+    return result
