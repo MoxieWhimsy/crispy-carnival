@@ -26,7 +26,6 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: 
                     result.append(TextNode(potential_split[index], node.text_type))
                     continue
                 combined = text_type + node.text_type
-                print(combined)
 
                 if TextType.BOLD_ITALIC in combined:
                     result.append(TextNode(potential_split[index], TextType.BOLD_ITALIC))
