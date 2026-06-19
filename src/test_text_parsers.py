@@ -114,5 +114,20 @@ Paragraph with text in it.
         node: HTMLNode = markdown_to_html_node(md)
         self.assertEqual(node.to_html(), th)
 
+    def test_markdown_to_blocks_4(self):
+        self.maxDiff = None
+        md = '''
+# Heading
+
+## Subheading
+
+###### Six deep
+
+####### Seven levels isn't valid
+        '''
+        th = '<div><h1>Heading</h1><h2>Subheading</h2><h6>Six deep</h6><p>####### Seven levels isn\'t valid</p></div>'
+        node: HTMLNode = markdown_to_html_node(md)
+        self.assertEqual(node.to_html(), th)
+
 if __name__ == '__main__':
     unittest.main()

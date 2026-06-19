@@ -17,7 +17,13 @@ class BlockType(Enum):
 
 def block_to_block_type(text_block: str) -> BlockType:
     if text_block.startswith("#") and not text_block.endswith("#"):
-        return BlockType.HEADING
+        block = text_block
+        count: int = 0
+        while block.startswith("#"):
+            count += 1
+            block = block[1:]
+        if count <= 6:
+            return BlockType.HEADING
     if text_block.startswith("```") and text_block.endswith("```"):
         return BlockType.CODE
     if text_block.startswith(">"):
