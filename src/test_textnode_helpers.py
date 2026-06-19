@@ -52,6 +52,18 @@ class MyTestCase(unittest.TestCase):
             TextNode("link", TextType.LINK, "https://boot.dev"),
         ], text_to_textnodes(text))
 
+    def test_nested_bold_italic(self):
+        text = "this is _italic text_ with an underscore delimiter. This is **bold text** with a double star delimiter. This is **_bold italic text_**."
+        self.assertEqual([
+            TextNode("this is ", TextType.TEXT),
+            TextNode("italic text", TextType.ITALIC),
+            TextNode(" with an underscore delimiter. This is ", TextType.TEXT),
+            TextNode("bold text", TextType.BOLD),
+            TextNode(" with a double star delimiter. This is ", TextType.TEXT),
+            TextNode("bold italic text", TextType.BOLD_ITALIC),
+            TextNode(".", TextType.TEXT),
+        ], text_to_textnodes(text))
+
     def test_nested_handled(self):
         node = TextNode("This is text with both **bold and _italics words_**", TextType.TEXT)
         new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
