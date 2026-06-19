@@ -1,21 +1,22 @@
-from textnode import TextNode, TextType
-from textnode_helpers import split_nodes_delimiter, split_nodes_image, split_nodes_link
+from blocks import block_to_html_node
+from htmlnode import HTMLNode, ParentNode
 
 
 def markdown_to_blocks(markdown: str) -> list[str]:
     blocks = markdown.split("\n\n")
     blocks = list(map(str.strip, blocks))
+    blocks = list(filter(None, blocks))
     return blocks
 
-def text_to_textnodes(text: str) -> list[TextNode]:
-    original_node = TextNode(text, TextType.TEXT)
-    nodes = [original_node]
-    nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
-    nodes = split_nodes_image(nodes)
-    nodes = split_nodes_link(nodes)
-    nodes = split_nodes_delimiter(nodes, "***", TextType.BOLD_ITALIC)
-    nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
-    nodes = split_nodes_delimiter(nodes, "*", TextType.ITALIC)
-    nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC)
+def markdown_to_html_node(markdown: str) -> HTMLNode:
+    result: list[HTMLNode] = []
+    blocks = markdown_to_blocks(markdown)
+    for block in blocks:
+        node = block_to_html_node(block)
+        if node is None:
+            print(f'warning: failed to process block {block}')
+            continue
+        result.append(node)
+    return ParentNode("div", result)
 
-    return nodes
+

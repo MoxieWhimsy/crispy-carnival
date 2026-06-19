@@ -1,7 +1,11 @@
 import re
 
-from textnode import TextNode, TextType
+from htmlnode import LeafNode, HTMLNode, ParentNode
+from textnode import TextNode, TextType, text_node_to_html_node
 
+
+def drop_empty_nodes(old_nodes: list[TextNode]) -> list[TextNode]:
+    return [node for node in old_nodes if node.text is not None and len(node.text) > 0]
 
 def extract_markdown_images(text: str) -> list[tuple[str, str]]:
     matches = re.findall(r"!\[([\w\s]+)]\(([\w.:/]+)\)", text)
@@ -86,3 +90,34 @@ def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
             result.append(TextNode(remaining_text, TextType.TEXT))
 
     return result
+
+
+def text_to_textnodes(text: str) -> list[TextNode]:
+    original_node = TextNode(text, TextType.TEXT)
+    nodes = [original_node]
+    nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
+    nodes = split_nodes_image(nodes)
+    nodes = split_nodes_link(nodes)
+    nodes = split_nodes_delimiter(nodes, "***", TextType.BOLD_ITALIC)
+    nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
+    nodes = split_nodes_delimiter(nodes, "*", TextType.ITALIC)
+    nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC)
+    nodes = drop_empty_nodes(nodes)
+
+    return nodes
+
+def text_to_html_inline(line: str, tag: str) -> HTMLNode:
+    nodes = text_to_textnodes(line)
+    if len(nodes) == 1 and nodes[0].text_type == TextType.TEXT:
+        return LeafNode(tag, nodes[0].text)
+    sub_items: list[HTMLNode] = list(map(text_node_to_html_node, nodes))
+    return ParentNode(tag, sub_items)
+
+def text_to_html_nodes(text: str) -> list[HTMLNode]:
+    nodes = text_to_textnodes(text)
+    if len(nodes) == 1 and nodes[0].text_type == TextType.TEXT:
+        return [text_node_to_html_node(nodes[0])]
+    sub_items: list[HTMLNode] = []
+    for node in nodes:
+        sub_items.append(text_node_to_html_node(node))
+    return sub_items

@@ -2,7 +2,7 @@ import unittest
 
 from textnode import TextNode, TextType
 from textnode_helpers import split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, \
-    split_nodes_link
+    split_nodes_link, text_to_textnodes
 
 
 class MyTestCase(unittest.TestCase):
@@ -22,6 +22,35 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(new_nodes[1], TextNode("bold", TextType.BOLD))
         self.assertEqual(new_nodes[2], TextNode(" ", TextType.TEXT))
         self.assertEqual(new_nodes[3], TextNode("word", TextType.BOLD))
+
+    def test_something_else_entirely(self):
+        text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        self.assertEqual([
+            TextNode("This is ", TextType.TEXT),
+            TextNode("text", TextType.BOLD),
+            TextNode(" with an ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word and a ", TextType.TEXT),
+            TextNode("code block", TextType.CODE),
+            TextNode(" and an ", TextType.TEXT),
+            TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+            TextNode(" and a ", TextType.TEXT),
+            TextNode("link", TextType.LINK, "https://boot.dev"),
+        ], text_to_textnodes(text))
+
+    def test_code(self):
+        text = "`This is **text** with an _italic_ word and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)` should render as \nThis is **text** with an _italic_ word and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        self.assertEqual([
+            TextNode("This is **text** with an _italic_ word and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)", TextType.CODE),
+            TextNode(" should render as \nThis is ", TextType.TEXT),
+            TextNode("text", TextType.BOLD),
+            TextNode(" with an ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word and an ", TextType.TEXT),
+            TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+            TextNode(" and a ", TextType.TEXT),
+            TextNode("link", TextType.LINK, "https://boot.dev"),
+        ], text_to_textnodes(text))
 
     def test_nested_handled(self):
         node = TextNode("This is text with both **bold and _italics words_**", TextType.TEXT)
