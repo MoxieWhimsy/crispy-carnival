@@ -51,7 +51,7 @@ the **same** even with inline stuff
 
     def test_nested_bold_italic(self):
         md = "this is _italic text_ with an underscore delimiter. This is **bold text** with a double star delimiter. This is **_bold italic text_**."
-        th = '<div><p>this is <i>italic text</i> with an underscore delimiter. This is <b>bold text</b> with a double star delimiter. This is <b><i>bold italic text</i></b></p></div>.'
+        th = '<div><p>this is <i>italic text</i> with an underscore delimiter. This is <b>bold text</b> with a double star delimiter. This is <b><i>bold italic text</i></b>.</p></div>'
         node: HTMLNode = markdown_to_html_node(md)
         self.assertEqual(node.to_html(), th)
 
