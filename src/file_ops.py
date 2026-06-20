@@ -5,8 +5,7 @@ import shutil
 def clear_and_copy(source: str, destination: str):
     if not os.path.isdir(source):
         raise TypeError("Source must be a directory")
-    if not os.path.isdir(destination):
-        shutil.rmtree(destination, ignore_errors=True)
+    shutil.rmtree(destination, ignore_errors=True)
     os.mkdir(destination)
     contents = os.listdir(source)
     if contents is None or len(contents) == 0:
