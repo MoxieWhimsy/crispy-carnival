@@ -2,7 +2,7 @@ import re
 from enum import Enum
 
 from htmlnode import HTMLNode, ParentNode
-from text_helpers import strip_front_char
+from text_helpers import strip_front_char, remove_up_to_period
 from textnode import TextNode, TextType
 from textnode_helpers import text_to_html_inline, text_to_textnodes, text_node_to_html_node
 
@@ -55,6 +55,7 @@ def block_to_html_node(block: str) -> HTMLNode | None:
             return text_to_html_inline(block, f"h{count}")
         case BlockType.ORDERED:
             lines = block.split("\n")
+            lines = list(map(remove_up_to_period, lines))
             items: list[HTMLNode] = list(map(convert_inline_li, lines))
             return ParentNode("ol", items)
         case BlockType.PARAGRAPH:
@@ -66,7 +67,7 @@ def block_to_html_node(block: str) -> HTMLNode | None:
         case BlockType.QUOTE:
             lines = block.split("\n")
             accumulator: list[str] = list(map(strip_front_char, lines))
-            nodes = text_to_textnodes(" ".join(accumulator))
+            nodes = text_to_textnodes("\n".join(accumulator))
             items: list[HTMLNode] = list(map(text_node_to_html_node, nodes))
 
             if len(lines) == 1:

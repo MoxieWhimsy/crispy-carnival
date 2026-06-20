@@ -7,3 +7,9 @@ def get_header_level(line: str) -> int:
         count += 1
         line = line[1:]
     return count
+
+def remove_up_to_period(line: str) -> str:
+    index = line.find(".")
+    if index == -1:
+        return line
+    return line[index+1:].lstrip()

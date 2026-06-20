@@ -107,8 +107,11 @@ Paragraph with text in it.
         """
         th = ('<div><h1>Heading</h1><p>Paragraph with text in it.</p><ul><li>List item</li><li>List item</li></ul>'
               '<blockquote>My humanitarian work evolved from being with my family. My mom, my dad, they really set a '
-              'great example for giving back. My mom was a nurse, my dad was a school teacher. But my mom did a lot '
-              'of things for geriatrics and elderly people. She would do home visits for free. ~ Cat Cora</blockquote></div>')
+              'great example for giving\n'
+              'back. My mom was a nurse, my dad was a school teacher. But my mom did a lot '
+              'of things for geriatrics and elderly\n'
+              'people. She would do home visits for free.\n'
+              '~ Cat Cora</blockquote></div>')
         node: HTMLNode = markdown_to_html_node(md)
         self.assertEqual(node.to_html(), th)
 
