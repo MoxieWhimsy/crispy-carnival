@@ -1,9 +1,7 @@
 import unittest
 
 from htmlnode import HTMLNode
-from text_parser import markdown_to_html_node, markdown_to_blocks
-from textnode import TextNode, TextType
-from textnode_helpers import text_to_textnodes
+from markdown_parser import markdown_to_html_node, markdown_to_blocks, extract_title
 
 
 class MyTestCase(unittest.TestCase):
@@ -128,6 +126,10 @@ Paragraph with text in it.
         th = '<div><h1>Heading</h1><h2>Subheading</h2><h6>Six deep</h6><p>####### Seven levels isn\'t valid</p></div>'
         node: HTMLNode = markdown_to_html_node(md)
         self.assertEqual(node.to_html(), th)
+
+    def test_extract_title_from_markdown(self):
+        md = "# Hello"
+        self.assertEqual(extract_title(md), "Hello")
 
 if __name__ == '__main__':
     unittest.main()
