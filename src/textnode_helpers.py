@@ -8,11 +8,11 @@ def drop_empty_nodes(old_nodes: list[TextNode]) -> list[TextNode]:
     return [node for node in old_nodes if node.text is not None and len(node.text) > 0]
 
 def extract_markdown_images(text: str) -> list[tuple[str, str]]:
-    matches = re.findall(r"!\[([\w\s]+)]\(([\w.:/]+)\)", text)
+    matches = re.findall(r"!\[([^[\]]+?)]\(([^\s[\]()]+?)\)", text)
     return matches
 
 def extract_markdown_links(text: str) -> list[tuple[str, str]]:
-    matches = re.findall(r"\[([\w\s]+)]\(([\w.:/@?&=%']+)\)", text)
+    matches = re.findall(r"(?:[^!]|^)\[([^[\]]+?)]\(([^\s[\]()]+?)\)", text)
     return matches
 
 def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: TextType) -> list[TextNode]:
@@ -102,7 +102,7 @@ def text_to_textnodes(text: str) -> list[TextNode]:
     nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
     nodes = split_nodes_delimiter(nodes, "*", TextType.ITALIC)
     nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC)
-    nodes = drop_empty_nodes(nodes)
+    # nodes = drop_empty_nodes(nodes)
 
     return nodes
 

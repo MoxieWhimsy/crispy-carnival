@@ -107,6 +107,18 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(matches[1][0], "to youtube")
         self.assertEqual(matches[1][1], "https://www.youtube.com/@bootdotdev")
 
+    def test_extract_more_markdown_links(self):
+        text = "This site was generated with a custom-built [static site generator](https://www.boot.dev/courses/build-static-site-generator-python) from the course on [Boot.dev](https://www.boot.dev)."
+        matches = extract_markdown_links(text)
+        self.assertEqual(len(matches), 2)
+        self.assertEqual(matches[0][0], 'static site generator')
+        self.assertEqual(matches[0][1], 'https://www.boot.dev/courses/build-static-site-generator-python')
+
+    def test_extract_even_more_markdown_links(self):
+        text = "[Why Glorfindel is More Impressive than Legolas](/blog/glorfindel)"
+        matches = extract_markdown_links(text)
+        self.assertEqual(len(matches), 1)
+
     def test_extract_markdown_mailto_link(self):
         text = "This is text with a mailto link [Contact Us](mailto:contact@yourwebsite.com) as an example"
         matches = extract_markdown_links(text)
