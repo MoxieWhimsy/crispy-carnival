@@ -38,3 +38,25 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
     full_html = template.replace("{{ Content }}", content_html).replace("{{ Title }}", title)
     with open(dest_path, "w") as f:
         f.write(full_html)
+
+def generate_page_recursive(dir_path_content: str, template_path: str, dest_dir_path: str):
+    if not os.path.isdir(dir_path_content):
+        raise TypeError("content path must be a directory")
+    if not os.path.isdir(dest_dir_path):
+        os.mkdir(dest_dir_path)
+    contents = os.listdir(dir_path_content)
+    if contents is None or len(contents) == 0:
+        return
+    for content in contents:
+        content_path = os.path.join(dir_path_content, content)
+        target_path = os.path.join(dest_dir_path, content)
+        if os.path.isdir(content_path):
+            generate_page_recursive(content_path, template_path, target_path)
+            continue
+        if not os.path.isfile(content_path):
+            continue
+        if not content.endswith(".md"):
+            continue
+
+        target_path = target_path[:-2] + "html"
+        generate_page(content_path, template_path, target_path)
